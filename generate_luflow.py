@@ -73,41 +73,79 @@ def generate_luflow(dir_path):
 def load_data_luflow(data_folder):
     dataset = pd.read_csv(data_folder + '/rawdata/dataset/dataset.csv')
 
-    item_data = dataset.iloc[0:864000, list(range(0, 14)) + [15]].values
-    Y = dataset.iloc[0:864000, 14].values
+    item_data = dataset.iloc[1:1014115, list(range(0, 14)) + [15]].values
+    Y = dataset.iloc[1:1014115, 14].values
     labelencoder_y = LabelEncoder()
     Y = labelencoder_y.fit_transform(Y)
     X = item_data.astype(np.float32)
-    # rows = 864000
-    # columns = 66
+    X = np.nan_to_num(X, nan=0)
+    Y = np.nan_to_num(Y, nan=0)
+
+    X_label_1 = []
+    X_label_2 = []
+    X_label_3 = []
+    for i, label in enumerate(Y):
+        if label == 0:
+            X_label_1.append(X[i, :])
+        elif label == 1:
+            X_label_2.append(X[i, :])
+        elif label == 2:
+            X_label_3.append(X[i, :])
+
+# Convert the lists to arrays
+    X_label_1 = np.array(X_label_1)
+    X_label_2 = np.array(X_label_2)
+    X_label_3 = np.array(X_label_3)
+
+# Convert the arrays back to pandas DataFrames
+    print("1 number", X_label_1.shape)
+    print("2 number", X_label_2.shape)
+    print("3 number", X_label_3.shape)
+    X_label_1 = X_label_1[:-320]
+    X_label_1 = X_label_1.reshape(-1,1152)
+    X_label_1 = X_label_1[:-25]
+    print("1 number", X_label_1.shape)
+    X_label_2 = X_label_2[:-158]
+    X_label_2 = X_label_2.reshape(-1,1152)  
+    print("2 number", X_label_2.shape)
+    X_label_3 = X_label_3[:-19]
+    X_label_3 = X_label_3.reshape(-1,1152) 
+    print("3 number", X_label_3.shape) 
+    pdb.set_trace()
+    X = np.vstack((X_label_1, X_label_2, X_label_3))
+    #rows = 11220
+    #columns = 1152
+    Y = np.vstack((np.zeros((5830,1)),np.ones((4425,1)),np.full((965, 1), 2)))
 
 
-    # array_2d = np.zeros((rows, columns), dtype=np.float32)
+    # array_2d = np.ones((rows, columns), dtype=np.float32)
     # X = np.hstack((X, array_2d), dtype=np.float32)
     # adder = X
-    # for i in range(383):
+    # for i in range(76):
     #     X = np.hstack((X,adder))
 
-    Y= Y.reshape(-1, 28800)
+    # X = np.delete(X, np.s_[-3:], axis=1)
+    Y= Y.reshape(30, 374)
     print(X.dtype)
     pdb.set_trace()
 
     # Convert the 2D NumPy array into a list of arrays
     YY = [arr for arr in Y]
     # rows = 864000
-    # XX = np.split(X, rows // 28800)
-    num_arrays = 864000 // 28800
 
-# Reshape the 2D array into a list of 3D arrays
+    # XX = np.split(X, rows // 28800)
+    num_arrays = 11220 // 374
+
+    # Reshape the 2D array into a list of 3D arrays
     XX = []
     for i in range(num_arrays):
-        start_index = i * 28800
-        end_index = (i + 1) * 28800
-        reshaped_array = X[start_index:end_index].reshape(28800, -1, 15)
+        start_index = i * 374
+        end_index = (i + 1) * 374
+        reshaped_array = X[start_index:end_index].reshape(374,  -1, 128)
         XX.append(reshaped_array)
 
     for i in range(len(XX)):
-        XX[i] = XX[i].reshape(-1,3,1,5)
+        XX[i] = XX[i].reshape(-1,9,1,128)
 
     
 
