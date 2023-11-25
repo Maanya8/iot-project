@@ -1,1 +1,2 @@
 # iot-project
+We have tried to make the X and Y inputs from luflow as similar as possible to HAR inputs. In HAR, X AND Y are both lists of size = number of clients = 30, where Y is a list of 1D arrays (size,) and X is a list of 4D arrays (size, 9, 1, 128). Now here is our problem - X:Y ratio in the input is just 15:1 in LUFLOW dataset, whereas its way higher in HAR. As we run this code, we run into problems because it seems the CNN model is expecting an input array with channels = 9 and kernels also greater than 9 (Haven't yet figured out what). 
